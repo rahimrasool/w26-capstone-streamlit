@@ -9,11 +9,11 @@ RUN pip install uv
 COPY pyproject.toml .
 COPY *.py .
 
-# Install dependencies
-RUN uv sync
+# Install CPU-only PyTorch first, then other dependencies
+RUN uv pip install --system torch torchvision --index-url https://download.pytorch.org/whl/cpu
+RUN uv pip install --system streamlit pillow
 
 # Expose Streamlit port
 EXPOSE 8501
 
-# Run the app
-CMD ["uv", "run", "streamlit", "run", "app.py", "--server.address", "0.0.0.0"]
+CMD ["streamlit", "run", "app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
